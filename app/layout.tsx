@@ -18,6 +18,24 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "GAZIOAI",
   description: "GAZIOAI — your AI assistant",
+
+  manifest: "/manifest.json",
+
+  icons: {
+    icon: [
+      {
+        url: "/launchericon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/launchericon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: "/launchericon-192x192.png",
+  },
 };
 
 export default function RootLayout({
