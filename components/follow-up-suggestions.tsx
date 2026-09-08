@@ -48,11 +48,11 @@ const FollowupSuggestionsRow: FC = () => {
       className="aui-thread-followup-suggestions -my-1 w-full overflow-x-auto py-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       style={{ maskImage, WebkitMaskImage: maskImage }}
     >
-      <div className="mx-auto flex min-h-8 w-max items-center gap-2 px-0.5">
+      <div className="mx-auto flex min-h-9 w-max max-w-full items-center gap-2 px-0.5">
         {suggestions.map((suggestion, idx) => (
           <ThreadPrimitive.Suggestion
             key={idx}
-            className="aui-thread-followup-suggestion bg-background hover:bg-muted/80 rounded-full border px-3 py-1 text-sm whitespace-nowrap transition-colors ease-in"
+            className="aui-thread-followup-suggestion min-h-9 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[13px] whitespace-nowrap text-white/80 transition-colors ease-in hover:border-violet-400/35 hover:bg-violet-500/10 hover:text-white"
             prompt={suggestion.prompt}
             method="replace"
             autoSend
@@ -72,11 +72,7 @@ const FollowupSuggestionsRow: FC = () => {
 
 export const ThreadFollowupSuggestions: FC = () => (
   <AuiIf
-    condition={(s) =>
-      !s.thread.isEmpty &&
-      !s.thread.isRunning &&
-      s.thread.suggestions.length > 0
-    }
+    condition={(s) => !s.thread.isEmpty && !s.thread.isRunning && s.thread.suggestions.length > 0}
   >
     <FollowupSuggestionsRow />
   </AuiIf>

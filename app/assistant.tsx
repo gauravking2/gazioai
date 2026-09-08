@@ -1,24 +1,31 @@
 "use client";
 
-import { AssistantRuntimeProvider, useRemoteThreadListRuntime } from "@assistant-ui/react";
-import {
-  useChatRuntime,
-  AssistantChatTransport,
-} from "@assistant-ui/react-ai-sdk";
+import { useEffect, useState } from "react";
+import { AssistantRuntimeProvider, useAui, useRemoteThreadListRuntime } from "@assistant-ui/react";
+import { useChatRuntime, AssistantChatTransport } from "@assistant-ui/react-ai-sdk";
 import { lastAssistantMessageIsCompleteWithToolCalls } from "ai";
+import { PlusIcon } from "lucide-react";
 import { Thread } from "@/components/thread";
 import { ThreadListSidebar } from "@/components/threadlist-sidebar";
 import { ModelSelector } from "@/components/model-selector";
+import { GazioAILogo } from "@/components/gazioai-logo";
+import { TooltipIconButton } from "@/components/tooltip-icon-button";
 import { threadListAdapter } from "@/lib/thread-adapter";
 import { useModelStore } from "@/lib/model-store";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
 export const Assistant = () => {
+  // Pause decorative CSS animations while the tab is hidden to save battery/GPU.
+  const [idle, setIdle] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIdle(document.hidden);
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+
   const runtime = useRemoteThreadListRuntime({
     runtimeHook: () =>
       useChatRuntime({
@@ -36,26 +43,25 @@ export const Assistant = () => {
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SidebarProvider>
-        <div className="gazioai-shell flex h-dvh w-full pr-0.5">
+        <div
+          className="gazioai-shell flex h-dvh w-full pr-0.5 pt-[env(safe-area-inset-top)]"
+          data-idle={idle}
+        >
           <ThreadListSidebar />
 
           <SidebarInset className="gazioai-main">
-            <header className="gazioai-header relative flex h-16 shrink-0 items-center border-b px-4 gap-4">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-              </div>
+            <header
+              aria-label="Conversation header"
+              className="gazioai-header relative flex h-14 shrink-0 items-center gap-1.5 border-b px-2.5 sm:gap-2.5 sm:px-4"
+            >
+              <SidebarTrigger className="size-8 shrink-0 rounded-full" />
+              <Separator orientation="vertical" className="h-4 opacity-60" />
+              <GazioAILogo size="sm" className="hidden min-[400px]:inline-flex" />
 
-              <div className="flex-1 flex justify-center min-w-0">
-                <h1 className="gazioai-wordmark text-xl font-bold tracking-[-0.045em] truncate" aria-label="GAZIOAI">
-                  <span className="gazioai-wordmark-purple">GAZIO</span>
-                  <span className="gazioai-wordmark-white">AI</span>
-                </h1>
-              </div>
+              <div className="min-w-0 flex-1" />
 
-              <div className="flex-shrink-0">
-                <ModelSelector />
-              </div>
+              <HeaderNewChat />
+              <ModelSelector className="shrink-0" />
             </header>
 
             <div className="gazioai-chat flex-1 overflow-hidden">
@@ -66,5 +72,23 @@ export const Assistant = () => {
         </div>
       </SidebarProvider>
     </AssistantRuntimeProvider>
+  );
+};
+
+const HeaderNewChat = () => {
+  const aui = useAui();
+
+  return (
+    <TooltipIconButton
+      tooltip="New chat"
+      side="bottom"
+      type="button"
+      size="icon"
+      className="text-muted-foreground hover:text-foreground size-8 rounded-full"
+      aria-label="New chat"
+      onClick={() => aui.threads.switchToNewThread()}
+    >
+      <PlusIcon className="size-4" />
+    </TooltipIconButton>
   );
 };

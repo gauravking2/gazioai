@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,10 +16,23 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#050508",
+};
+
 export const metadata: Metadata = {
   title: "GAZIOAI",
   description: "GAZIOAI — your AI assistant",
-
+  applicationName: "GAZIOAI",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GAZIOAI",
+  },
+  formatDetection: { telephone: false },
   manifest: "/manifest.json",
 
   icons: {
@@ -47,6 +61,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${ibmPlexMono.variable} antialiased`}>
         <TooltipProvider>{children}</TooltipProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
